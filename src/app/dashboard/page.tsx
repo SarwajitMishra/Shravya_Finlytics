@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,13 +35,13 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
-  SidebarFooter,
 } from '@/components/ui/sidebar';
 import StockChart from '@/components/dashboard/stock-chart';
 import InvestmentAssistant from '@/components/dashboard/investment-assistant';
 import Watchlist from '@/components/dashboard/watchlist';
 import EconomicEvents from '@/components/dashboard/economic-events';
 import MarketNews from '@/components/dashboard/market-news';
+import PortfolioOverview from '@/components/dashboard/portfolio-overview';
 import { AppLogo } from '@/components/icons';
 import Link from 'next/link';
 
@@ -121,7 +120,7 @@ export default function DashboardPage() {
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex flex-col flex-1 overflow-y-auto">
+        <div className="flex flex-col flex-1 overflow-y-auto bg-background">
           <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background/80 backdrop-blur-sm sm:px-6">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="md:hidden" />
@@ -187,29 +186,16 @@ export default function DashboardPage() {
             </div>
           </header>
 
-          <main className="flex-1">
-            <div className="p-4 sm:p-6">
-                <div className="grid gap-6 lg:grid-cols-3">
-                    <div className="lg:col-span-2">
-                        <StockChart />
-                    </div>
-                    <div className="lg:col-span-1 lg:row-span-2">
-                        <Watchlist />
-                    </div>
-                    <div className="lg:col-span-2">
-                         <MarketNews />
-                    </div>
+          <main className="flex-1 p-4 sm:p-6">
+            <div className="grid gap-6 xl:grid-cols-3">
+                <div className="space-y-6 xl:col-span-2">
+                    <StockChart />
+                    <MarketNews />
                 </div>
-                <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="space-y-6 xl:col-span-1">
+                    <Watchlist />
+                    <PortfolioOverview />
                     <EconomicEvents />
-                    <Card>
-                        <CardHeader>
-                        <CardTitle>Portfolio Overview</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                        <p className="text-sm text-muted-foreground">Your portfolio insights will be displayed here.</p>
-                        </CardContent>
-                    </Card>
                 </div>
             </div>
           </main>
