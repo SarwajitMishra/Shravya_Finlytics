@@ -1,9 +1,10 @@
 
 import { NextResponse } from 'next/server';
+import type { NewsArticle } from "@/lib/types";
 
 const newsApiKey = process.env.NEWS_API_KEY;
 
-const sampleNews = [
+const sampleNews: NewsArticle[] = [
     {
       title: "Sensex, Nifty hit fresh record highs",
       summary: "Indian benchmark indices soared to new peaks, driven by strong inflows from foreign institutional investors and positive global cues.",
@@ -20,7 +21,6 @@ const sampleNews = [
 
 export async function GET() {
   if (!newsApiKey || newsApiKey === "YOUR_NEWS_API_KEY") {
-    // API key not provided, return sample data
     return NextResponse.json(sampleNews);
   }
 
@@ -31,17 +31,16 @@ export async function GET() {
     }
     const data = await response.json();
     
-    const articles = data.articles.map((article: any) => ({
+    const articles = data.articles.map((article: any): Omit<NewsArticle, 'category'> & { category: string } => ({
       title: article.title,
       summary: article.description || 'No summary available.',
-      category: 'Business', // NewsAPI doesn't provide fine-grained categories like 'Earnings'
+      category: 'Business',
       link: article.url,
     }));
 
     return NextResponse.json(articles);
   } catch (error) {
     console.error("Error fetching from NewsAPI:", error);
-    // Fallback to sample data in case of error
     return NextResponse.json(sampleNews);
   }
 }
