@@ -136,7 +136,7 @@ export default function DashboardPage() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative p-0 rounded-full h-9 w-9">
                     <Avatar className="w-9 h-9">
-                      <AvatarImage src="https://placehold.co/100x100" alt="User" data-ai-hint="profile" />
+                      <AvatarImage src="https://i.pravatar.cc/100?u=shravya" alt="User" data-ai-hint="profile" />
                       <AvatarFallback>SF</AvatarFallback>
                     </Avatar>
                   </Button>

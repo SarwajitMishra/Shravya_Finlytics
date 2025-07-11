@@ -10,10 +10,10 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
     router.push('/dashboard');
   };
@@ -23,46 +23,45 @@ export default function LoginPage() {
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="text-center">
           <AppLogo className="w-12 h-12 mx-auto text-primary" />
-          <CardTitle className="text-2xl font-headline mt-2">Welcome Back</CardTitle>
-          <CardDescription>Enter your email below to login to your account</CardDescription>
+          <CardTitle className="text-2xl font-headline mt-2">Create an Account</CardTitle>
+          <CardDescription>Enter your details below to get started</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="grid gap-4">
+          <form onSubmit={handleSignup} className="grid gap-4">
+             <div className="grid gap-2">
+              <Label htmlFor="fullname">Full Name</Label>
+              <Input id="fullname" type="text" placeholder="Shravya" required />
+            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" placeholder="m@example.com" required />
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline">
-                  Forgot your password?
-                </Link>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full">
-              Login
+              Create Account
             </Button>
           </form>
            <Separator className="my-4" />
-          <div className="grid gap-3">
+           <div className="grid gap-3">
              <Button variant="outline" className="w-full">
               <GoogleIcon className="mr-2 h-5 w-5" />
-              Login with Google
+              Sign up with Google
             </Button>
             <Button variant="outline" className="w-full">
               <AppleIcon className="mr-2 h-5 w-5" />
-              Login with Apple
+              Sign up with Apple
             </Button>
-            <Button variant="outline" className="w-full">
-              Login with Phone
+             <Button variant="outline" className="w-full">
+              Sign up with Phone
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{' '}
-            <Link href="/signup" className="underline">
-              Sign up
+            Already have an account?{' '}
+            <Link href="/login" className="underline">
+              Login
             </Link>
           </div>
         </CardContent>
