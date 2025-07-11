@@ -1,7 +1,6 @@
 import {
   Bell,
   CandlestickChart,
-  ChevronDown,
   Coins,
   History,
   LayoutGrid,
@@ -12,7 +11,6 @@ import {
   User,
   Wallet,
 } from 'lucide-react';
-import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,7 +32,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarInset,
   SidebarTrigger,
   SidebarFooter,
 } from '@/components/ui/sidebar';
@@ -44,7 +41,6 @@ import Watchlist from '@/components/dashboard/watchlist';
 import EconomicEvents from '@/components/dashboard/economic-events';
 import MarketNews from '@/components/dashboard/market-news';
 import { AppLogo } from '@/components/icons';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function DashboardPage() {
   return (
@@ -173,32 +169,32 @@ export default function DashboardPage() {
           <main className="flex-1 overflow-y-auto">
             <div className="p-4 sm:p-6">
                 <div className="grid gap-6 lg:grid-cols-3">
-                <div className="lg:col-span-2">
-                    <StockChart />
-                </div>
-                <div className="lg:row-span-2">
-                    <InvestmentAssistant />
-                </div>
-                <div className="lg:col-span-2">
-                    <Watchlist />
-                </div>
+                    <div className="lg:col-span-2">
+                        <StockChart />
+                    </div>
+                    <div className="lg:col-span-1 lg:row-span-2">
+                        <Watchlist />
+                    </div>
+                    <div className="lg:col-span-2">
+                         <MarketNews />
+                    </div>
                 </div>
                 <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
-                <MarketNews />
-                <EconomicEvents />
-                <Card>
-                    <CardHeader>
-                    <CardTitle>Portfolio Overview</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                    <p className="text-sm text-muted-foreground">Your portfolio insights will be displayed here.</p>
-                    </CardContent>
-                </Card>
+                    <EconomicEvents />
+                    <Card>
+                        <CardHeader>
+                        <CardTitle>Portfolio Overview</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                        <p className="text-sm text-muted-foreground">Your portfolio insights will be displayed here.</p>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
           </main>
         </div>
       </div>
+      <InvestmentAssistant />
     </SidebarProvider>
   );
 }

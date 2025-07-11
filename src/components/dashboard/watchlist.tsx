@@ -68,7 +68,7 @@ const sentimentIndicator = {
 
 export default function Watchlist() {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle className="font-headline flex items-center gap-2">
           <Star />

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Bot, User, Loader2 } from "lucide-react";
+import { Send, Bot, User, Loader2, MessageSquare, X } from "lucide-react";
 import { getInvestmentAdvice } from "@/ai/flows/investment-advice-chat";
 import { autoTriggerFeedback } from "@/ai/flows/auto-trigger-feedback";
 import { useToast } from "@/hooks/use-toast";
@@ -25,6 +25,7 @@ interface Message {
 }
 
 export default function InvestmentAssistant() {
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: "bot",
@@ -56,7 +57,6 @@ export default function InvestmentAssistant() {
 
     try {
       let response;
-      // Simple logic to detect if it's a review request
       if (input.toLowerCase().includes("review") || input.toLowerCase().includes("infosys") || input.toLowerCase().includes("reliance")) {
         const stockMatch = input.match(/(?:review|invest in|performance of)\s+([A-Z]+)/i);
         const stockTicker = stockMatch ? stockMatch[1] : (input.toLowerCase().includes("infosys") ? "INFY" : "RELIANCE");
@@ -84,81 +84,90 @@ export default function InvestmentAssistant() {
   };
 
   return (
-    <Card className="flex flex-col h-full max-h-[calc(100vh-10rem)]">
-      <CardHeader>
-        <CardTitle className="font-headline flex items-center gap-2">
-          <Bot />
-          <span>Investment Assistant</span>
-        </CardTitle>
-        <CardDescription>
-          Get real-time, data-backed answers to your financial questions.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
-          <div className="space-y-4">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "flex items-start gap-3",
-                  message.sender === "user" ? "justify-end" : ""
-                )}
-              >
-                {message.sender === "bot" && (
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback>
-                      <Bot className="w-5 h-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                <div
-                  className={cn(
-                    "max-w-[80%] rounded-lg p-3 text-sm",
-                    message.sender === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  )}
-                >
-                  <p>{message.text}</p>
-                </div>
-                {message.sender === "user" && (
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback>
-                      <User className="w-5 h-5" />
-                    </AvatarFallback>
-                  </Avatar>
+    <div className="fixed bottom-4 right-4 z-50">
+      <div className={cn("transition-all duration-300", isOpen ? "opacity-100" : "opacity-0 pointer-events-none translate-y-4")}>
+        <Card className="flex flex-col h-[60vh] w-96 shadow-xl">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Bot />
+              <CardTitle className="font-headline text-lg">Shravya Finlytics AI</CardTitle>
+            </div>
+             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsOpen(false)}>
+                <X className="h-4 w-4" />
+             </Button>
+          </CardHeader>
+          <CardContent className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
+              <div className="space-y-4">
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "flex items-start gap-3",
+                      message.sender === "user" ? "justify-end" : ""
+                    )}
+                  >
+                    {message.sender === "bot" && (
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback>
+                          <Bot className="w-5 h-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div
+                      className={cn(
+                        "max-w-[80%] rounded-lg p-3 text-sm",
+                        message.sender === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted"
+                      )}
+                    >
+                      <p>{message.text}</p>
+                    </div>
+                    {message.sender === "user" && (
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback>
+                          <User className="w-5 h-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="flex items-start gap-3">
+                    <Avatar className="w-8 h-8">
+                        <AvatarFallback>
+                          <Bot className="w-5 h-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                    <div className="bg-muted rounded-lg p-3">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    </div>
+                  </div>
                 )}
               </div>
-            ))}
-            {isLoading && (
-              <div className="flex items-start gap-3">
-                <Avatar className="w-8 h-8">
-                    <AvatarFallback>
-                      <Bot className="w-5 h-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                <div className="bg-muted rounded-lg p-3">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                </div>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-      </CardContent>
-      <CardFooter>
-        <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="e.g., Should I invest in Infosys?"
-            disabled={isLoading}
-          />
-          <Button type="submit" size="icon" disabled={isLoading}>
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
-      </CardFooter>
-    </Card>
+            </ScrollArea>
+          </CardContent>
+          <CardFooter>
+            <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="e.g., Should I invest in Infosys?"
+                disabled={isLoading}
+              />
+              <Button type="submit" size="icon" disabled={isLoading}>
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
+          </CardFooter>
+        </Card>
+      </div>
+      <div className="flex justify-end mt-2">
+        <Button onClick={() => setIsOpen(!isOpen)} size="icon" className="h-14 w-14 rounded-full shadow-lg">
+          {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
+        </Button>
+      </div>
+    </div>
   );
 }
