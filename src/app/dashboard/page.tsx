@@ -1,3 +1,4 @@
+
 import {
   Bell,
   CandlestickChart,
@@ -91,30 +92,6 @@ export default function DashboardPage() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/dashboard/watchlist">
-                    <Star />
-                    <span>Watchlist</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/dashboard/portfolio">
-                    <Wallet />
-                    <span>Portfolio</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/dashboard/history">
-                    <History />
-                    <span>History</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
         </Sidebar>
@@ -164,6 +141,24 @@ export default function DashboardPage() {
                       <Link href="/dashboard/profile">
                         <User className="mr-2" />
                         <span>Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/watchlist">
+                        <Star className="mr-2" />
+                        <span>Watchlist</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/portfolio">
+                        <Wallet className="mr-2" />
+                        <span>Portfolio</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/history">
+                        <History className="mr-2" />
+                        <span>History</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
