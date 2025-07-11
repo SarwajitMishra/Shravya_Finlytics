@@ -30,6 +30,7 @@ import {
   Share2,
 } from "lucide-react";
 import type { Achievement, ScoinHistory } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 const achievements: Achievement[] = [
     { icon: <Star className="w-5 h-5 text-yellow-500" />, title: "Stock Watcher", description: "5 stocks in watchlist", achieved: true },
