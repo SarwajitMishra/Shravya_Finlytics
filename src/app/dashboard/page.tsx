@@ -62,45 +62,59 @@ export default function DashboardPage() {
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard" isActive>
-                  <LayoutGrid />
-                  <span>Dashboard</span>
+                <SidebarMenuButton asChild isActive>
+                  <Link href="/dashboard">
+                    <LayoutGrid />
+                    <span>Dashboard</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/markets">
-                  <CandlestickChart />
-                  <span>Markets</span>
+                <SidebarMenuButton asChild>
+                  <Link href="/dashboard/markets">
+                    <CandlestickChart />
+                    <span>Markets</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/charts">
-                  <BarChart2 />
-                  <span>Charts</span>
+                <SidebarMenuButton asChild>
+                  <Link href="/dashboard/charts">
+                    <BarChart2 />
+                    <span>Charts</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/news">
-                  <Newspaper />
-                  <span>News</span>
+                <SidebarMenuButton asChild>
+                  <Link href="/dashboard/news">
+                    <Newspaper />
+                    <span>News</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/watchlist">
-                  <Star />
-                  <span>Watchlist</span>
+                <SidebarMenuButton asChild>
+                  <Link href="/dashboard/watchlist">
+                    <Star />
+                    <span>Watchlist</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/portfolio">
-                  <Wallet />
-                  <span>Portfolio</span>
+                <SidebarMenuButton asChild>
+                  <Link href="/dashboard/portfolio">
+                    <Wallet />
+                    <span>Portfolio</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/history">
-                  <History />
-                  <span>History</span>
+                <SidebarMenuButton asChild>
+                  <Link href="/dashboard/history">
+                    <History />
+                    <span>History</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -170,12 +184,6 @@ export default function DashboardPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Link href="/dashboard/settings">
-                <Button variant="ghost" size="icon">
-                    <Settings className="w-5 h-5" />
-                    <span className="sr-only">Settings</span>
-                </Button>
-              </Link>
             </div>
           </header>
 
