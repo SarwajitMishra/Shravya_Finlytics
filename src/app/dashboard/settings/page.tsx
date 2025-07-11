@@ -8,17 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,10 +20,19 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
-  Globe,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import {
   Palette,
   Bell,
-  SlidersHorizontal,
   ShieldCheck,
   Info,
   ChevronRight,
@@ -42,21 +40,29 @@ import {
   Trash2,
   Filter,
   ArrowLeft,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 
 export default function SettingsPage() {
     const router = useRouter();
+    const { theme, setTheme } = useTheme();
 
-  const applyTheme = (theme: string) => {
-    const root = document.documentElement;
-    root.classList.remove('theme-ocean', 'theme-forest', 'dark');
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else if (theme !== 'light') {
-      root.classList.add(`theme-${theme}`);
+    const handleThemeChange = (newTheme: string) => {
+      const currentMode = theme?.includes('dark') ? 'dark' : 'light';
+      if (newTheme === 'light' || newTheme === 'dark') {
+          setTheme(newTheme);
+      } else {
+          setTheme(`${newTheme}-${currentMode}`);
+      }
+    };
+
+    const handleModeToggle = (isDark: boolean) => {
+        const currentThemeName = theme?.replace('-dark', '').replace('-light', '') || 'stone';
+        setTheme(isDark ? `${currentThemeName}-dark` : currentThemeName);
     }
-  };
 
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-4xl mx-auto">
@@ -73,47 +79,62 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2 font-headline">
             <Palette />
-            <span>General Preferences</span>
+            <span>Appearance</span>
           </CardTitle>
+          <CardDescription>Customize the look and feel of your interface.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="language" className="flex flex-col gap-1">
-              <span>Language</span>
-               <span className="text-xs font-normal text-muted-foreground">Choose your preferred language</span>
-            </Label>
-            <Select defaultValue="en">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="hi">Hindi</SelectItem>
-                <SelectItem value="bn">Bengali</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <Label htmlFor="theme" className="flex flex-col gap-1">
-              <span>Theme</span>
-              <span className="text-xs font-normal text-muted-foreground">Select your interface theme</span>
-            </Label>
-             <Select defaultValue="light" onValueChange={applyTheme}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="ocean">Ocean</SelectItem>
-                <SelectItem value="forest">Forest</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="flex items-center justify-between">
+                <Label htmlFor="theme-mode" className="flex flex-col gap-1">
+                    <span>Mode</span>
+                    <span className="text-xs font-normal text-muted-foreground">Toggle between light and dark themes.</span>
+                </Label>
+                <div className="flex items-center gap-2">
+                    <Sun className="h-5 w-5" />
+                    <Switch
+                        id="theme-mode"
+                        checked={theme?.includes('dark')}
+                        onCheckedChange={handleModeToggle}
+                    />
+                    <Moon className="h-5 w-5" />
+                </div>
+            </div>
+            <Separator />
+            <div className="space-y-3">
+                <Label htmlFor="theme-color" className="flex flex-col gap-1">
+                    <span>Color</span>
+                    <span className="text-xs font-normal text-muted-foreground">Select your preferred accent color.</span>
+                </Label>
+                <RadioGroup 
+                    defaultValue={theme?.replace('-dark', '').replace('-light', '') || 'stone'}
+                    onValueChange={(value) => handleThemeChange(value)}
+                    className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+                >
+                    <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
+                         <RadioGroupItem value="stone" id="theme-stone" className="sr-only"/>
+                         <div className="rounded-full w-10 h-10 bg-stone-500 border-2 border-muted" />
+                         <span className="font-normal">Stone</span>
+                    </Label>
+                     <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
+                         <RadioGroupItem value="emerald" id="theme-emerald" className="sr-only"/>
+                         <div className="rounded-full w-10 h-10 bg-emerald-500 border-2 border-muted" />
+                         <span className="font-normal">Emerald</span>
+                    </Label>
+                    <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
+                         <RadioGroupItem value="rose" id="theme-rose" className="sr-only"/>
+                         <div className="rounded-full w-10 h-10 bg-rose-500 border-2 border-muted" />
+                         <span className="font-normal">Rose</span>
+                    </Label>
+                    <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
+                         <RadioGroupItem value="blue" id="theme-blue" className="sr-only"/>
+                         <div className="rounded-full w-10 h-10 bg-blue-500 border-2 border-muted" />
+                         <span className="font-normal">Blue</span>
+                    </Label>
+                </RadioGroup>
+            </div>
         </CardContent>
       </Card>
-
+      
       {/* Watchlist & News Filters */}
       <Card>
         <CardHeader>
@@ -252,3 +273,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    
