@@ -31,16 +31,18 @@ export async function GET() {
     }
     const data = await response.json();
     
-    const articles = data.articles.map((article: any): Omit<NewsArticle, 'category'> & { category: string } => ({
+    const articles = data.articles.map((article: any): NewsArticle => ({
       title: article.title,
       summary: article.description || 'No summary available.',
-      category: 'Business',
+      // All news from this business endpoint will be categorized as 'Economy' for consistency
+      category: 'Economy',
       link: article.url,
     }));
 
     return NextResponse.json(articles);
   } catch (error) {
     console.error("Error fetching from NewsAPI:", error);
+    // Fallback to sample data in case of a major error
     return NextResponse.json(sampleNews);
   }
 }

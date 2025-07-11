@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -10,9 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Newspaper, Rss } from "lucide-react";
+import { Newspaper } from "lucide-react";
 import type { NewsArticle } from "@/lib/types";
 import { Skeleton } from '../ui/skeleton';
+import { Button } from '../ui/button';
 
 export default function MarketNews() {
   const [newsData, setNewsData] = useState<NewsArticle[]>([]);
@@ -32,6 +32,11 @@ export default function MarketNews() {
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        // Set sample data on error to prevent empty state
+        setNewsData([
+            { title: "Sensex, Nifty hit fresh record highs", summary: "Indian benchmark indices soared to new peaks...", category: "Economy", link: "#"},
+            { title: "IT majors report mixed Q2 earnings", summary: "While some IT giants beat estimates, others faced margin pressures...", category: "Earnings", link: "#"},
+        ]);
       } finally {
         setLoading(false);
       }
@@ -47,7 +52,7 @@ export default function MarketNews() {
           <span>Financial News Summary</span>
         </CardTitle>
         <CardDescription>
-          The latest headlines from top business sources.
+          The latest headlines from top business sources, powered by NewsAPI.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -61,32 +66,23 @@ export default function MarketNews() {
               </div>
             ))}
           </div>
-        ) : error ? (
-            <p className="text-red-500 text-center">{error}</p>
         ) : (
           <div className="space-y-4">
             {newsData.map((article, index) => (
-              <a 
-                key={index} 
-                href={article.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block p-3 rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <h4 className="font-semibold">{article.title}</h4>
-                  <Badge
-                    variant="secondary"
-                    className="capitalize hidden sm:inline-flex"
-                  >
-                    {article.category}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground line-clamp-2">{article.summary}</p>
-              </a>
+              <div key={index} className="p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                 <div className="flex items-start justify-between mb-1 gap-2">
+                    <h4 className="font-semibold flex-1">{article.title}</h4>
+                    <Badge variant="outline" className="capitalize hidden sm:inline-flex whitespace-nowrap">{article.category}</Badge>
+                 </div>
+                 <p className="text-sm text-muted-foreground line-clamp-2">{article.summary}</p>
+                 <a href={article.link} target="_blank" rel="noopener noreferrer">
+                    <Button variant="link" className="p-0 h-auto mt-1 text-xs">Read more</Button>
+                 </a>
+              </div>
             ))}
           </div>
         )}
+         {error && <p className="text-xs text-red-500 text-center pt-4">{error}. Displaying sample data.</p>}
       </CardContent>
     </Card>
   );

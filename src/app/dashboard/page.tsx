@@ -1,4 +1,3 @@
-
 import {
   Bell,
   CandlestickChart,
@@ -48,7 +47,7 @@ import Link from 'next/link';
 export default function DashboardPage() {
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="flex h-screen bg-background">
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
@@ -120,7 +119,7 @@ export default function DashboardPage() {
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex flex-col flex-1 overflow-y-auto bg-background">
+        <div className="flex flex-col flex-1 overflow-y-auto">
           <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background/80 backdrop-blur-sm sm:px-6">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="md:hidden" />
@@ -187,14 +186,20 @@ export default function DashboardPage() {
           </header>
 
           <main className="flex-1 p-4 sm:p-6">
-            <div className="grid gap-6 xl:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 <div className="space-y-6 xl:col-span-2">
                     <StockChart />
+                </div>
+                <div className="space-y-6 md:col-span-1">
+                    <Watchlist />
+                </div>
+                <div className="space-y-6 md:col-span-2 xl:col-span-1">
+                     <PortfolioOverview />
+                </div>
+                <div className="space-y-6 md:col-span-1 xl:col-span-2">
                     <MarketNews />
                 </div>
-                <div className="space-y-6 xl:col-span-1">
-                    <Watchlist />
-                    <PortfolioOverview />
+                 <div className="space-y-6 md:col-span-1 xl:col-span-3">
                     <EconomicEvents />
                 </div>
             </div>
