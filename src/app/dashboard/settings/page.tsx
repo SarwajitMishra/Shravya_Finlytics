@@ -1,0 +1,18 @@
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+export default function SettingsPage() {
+  return (
+    <div className="p-4 sm:p-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Settings</CardTitle>
+          <CardDescription>Manage your account settings.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Account settings form will be displayed here.</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

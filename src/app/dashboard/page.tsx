@@ -11,6 +11,7 @@ import {
   User,
   Wallet,
   LogOut,
+  BarChart2,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -47,7 +48,7 @@ import Link from 'next/link';
 export default function DashboardPage() {
   return (
     <SidebarProvider>
-      <div className="h-screen flex">
+      <div className="flex h-screen overflow-hidden">
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
@@ -60,7 +61,7 @@ export default function DashboardPage() {
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#" isActive>
+                <SidebarMenuButton href="/dashboard" isActive>
                   <LayoutGrid />
                   <span>Dashboard</span>
                 </SidebarMenuButton>
@@ -69,6 +70,12 @@ export default function DashboardPage() {
                 <SidebarMenuButton href="#">
                   <CandlestickChart />
                   <span>Markets</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="/dashboard/charts">
+                  <BarChart2 />
+                  <span>Charts</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -99,8 +106,14 @@ export default function DashboardPage() {
           </SidebarContent>
           <SidebarFooter>
             <SidebarMenu>
+               <SidebarMenuItem>
+                <SidebarMenuButton href="/dashboard/profile">
+                  <User />
+                  <span>Profile</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#">
+                <SidebarMenuButton href="/dashboard/settings">
                   <Settings />
                   <span>Settings</span>
                 </SidebarMenuButton>
@@ -109,7 +122,7 @@ export default function DashboardPage() {
           </SidebarFooter>
         </Sidebar>
 
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 overflow-hidden">
           <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background/80 backdrop-blur-sm sm:px-6">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="md:hidden" />
@@ -150,13 +163,17 @@ export default function DashboardPage() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <User className="mr-2" />
-                      <span>Profile</span>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/profile">
+                        <User className="mr-2" />
+                        <span>Profile</span>
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings className="mr-2" />
-                      <span>Settings</span>
+                    <DropdownMenuItem asChild>
+                       <Link href="/dashboard/settings">
+                        <Settings className="mr-2" />
+                        <span>Settings</span>
+                       </Link>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
