@@ -323,7 +323,7 @@ function SparklineChart({ data, changeType }: { data: typeof infosysData; change
           stroke={color}
           stackId="a"
         />
-        <Tooltip content={<></>} />
+        <Tooltip cursor={false} content={null} />
       </AreaChart>
     </ChartContainer>
   )
