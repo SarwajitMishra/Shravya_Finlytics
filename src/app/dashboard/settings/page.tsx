@@ -20,6 +20,17 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Globe,
   Palette,
   Bell,
@@ -29,6 +40,7 @@ import {
   ChevronRight,
   Download,
   Trash2,
+  Filter,
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -53,18 +65,6 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
-            <Label htmlFor="theme" className="flex flex-col gap-1">
-              <span>Theme</span>
-              <span className="text-xs font-normal text-muted-foreground">Toggle between light and dark mode</span>
-            </Label>
-            <div className="flex items-center gap-2">
-                <span>Light</span>
-                <Switch id="theme" />
-                <span>Dark</span>
-            </div>
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
             <Label htmlFor="language" className="flex flex-col gap-1">
               <span>Language</span>
                <span className="text-xs font-normal text-muted-foreground">Choose your preferred language</span>
@@ -79,6 +79,55 @@ export default function SettingsPage() {
                 <SelectItem value="bn">Bengali</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <Label htmlFor="theme" className="flex flex-col gap-1">
+              <span>Theme</span>
+              <span className="text-xs font-normal text-muted-foreground">Toggle between light and dark mode</span>
+            </Label>
+            <div className="flex items-center gap-2">
+                <span>Light</span>
+                <Switch id="theme" />
+                <span>Dark</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Watchlist & News Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center gap-2 font-headline">
+            <Filter />
+            <span>Watchlist &amp; News Filters</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="default-sector" className="flex flex-col gap-1">
+              <span>Default Watchlist Sector</span>
+              <span className="text-xs font-normal text-muted-foreground">Select a default sector to focus on</span>
+            </Label>
+            <Select defaultValue="it">
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sector" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="it">IT</SelectItem>
+                <SelectItem value="pharma">Pharma</SelectItem>
+                <SelectItem value="banking">Banking</SelectItem>
+                <SelectItem value="auto">Automobile</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <Label htmlFor="ai-suggestions" className="flex flex-col gap-1">
+              <span>Auto-Add from AI Suggestions</span>
+              <span className="text-xs font-normal text-muted-foreground">Automatically add AI-recommended stocks to your watchlist</span>
+            </Label>
+            <Switch id="ai-suggestions" />
           </div>
         </CardContent>
       </Card>
@@ -135,7 +184,23 @@ export default function SettingsPage() {
             <Separator />
             <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-900/20">
                 <Label className="font-medium text-red-600 dark:text-red-400">Delete Account</Label>
-                <Button variant="destructive" size="sm"><Trash2 className="mr-2"/>Delete</Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm"><Trash2 className="mr-2"/>Delete</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action is irreversible and will permanently delete your account, watchlist, and all associated data.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction>Yes, delete my account</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
             </div>
         </CardContent>
       </Card>
