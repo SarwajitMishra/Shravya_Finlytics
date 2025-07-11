@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -12,6 +13,8 @@ import {
   TrendingDown,
   Minus,
   MessageCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   Bar,
@@ -43,6 +46,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { autoTriggerFeedback } from "@/ai/flows/auto-trigger-feedback";
 import type { StockDetails } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
+import { Badge } from '../ui/badge';
+import { cn } from '@/lib/utils';
 
 
 const infosysData = [
@@ -98,26 +103,7 @@ type StockId = keyof typeof stockConfig;
 
 export default function StockChart() {
   const [activeStock, setActiveStock] = useState<StockId>("infosys");
-  const [aiInsight, setAiInsight] = useState<string>('');
-  const [isLoadingInsight, setIsLoadingInsight] = useState(true);
-
-  useEffect(() => {
-    const fetchInsight = async () => {
-      if (!activeStock) return;
-      setIsLoadingInsight(true);
-      try {
-        const result = await autoTriggerFeedback({ stockTicker: stockConfig[activeStock].ticker });
-        setAiInsight(result.review);
-      } catch (error) {
-        console.error("Failed to fetch AI insight:", error);
-        setAiInsight("Could not load AI insight at the moment.");
-      } finally {
-        setIsLoadingInsight(false);
-      }
-    };
-    fetchInsight();
-  }, [activeStock]);
-
+  
   return (
     <Card className="h-full flex flex-col">
       <Tabs defaultValue="infosys" onValueChange={(value) => setActiveStock(value as StockId)}>
@@ -139,30 +125,98 @@ export default function StockChart() {
           </div>
         </CardHeader>
         <CardContent className="p-4 pt-0">
-          {isLoadingInsight ? (
-             <Skeleton className="h-12 w-full" />
-          ) : (
-            <Alert>
-              <Sparkles className="h-4 w-4" />
-              <AlertTitle>AI Insight</AlertTitle>
-              <AlertDescription>{aiInsight}</AlertDescription>
-            </Alert>
-          )}
+          
+          <AIInsight stockId={activeStock} />
 
           <div className="mt-4">
             <ChartViews data={stockConfig[activeStock].data} />
           </div>
 
           <div className="mt-4 pt-4 border-t flex flex-wrap gap-2 justify-center">
-            <Button variant="outline"><MessageCircle /> Analyze This Stock</Button>
-            <Button variant="outline"><BrainCircuit /> Get Investment Advice</Button>
-            <Button variant="outline"><PieChart /> Compare with Industry Avg</Button>
+            <Button variant="outline"><MessageCircle /> Ask AI About This Stock</Button>
+            <Button variant="outline"><PieChart /> Compare with Industry</Button>
           </div>
         </CardContent>
       </Tabs>
     </Card>
   );
 }
+
+function AIInsight({stockId}: {stockId: StockId}) {
+  const [aiInsight, setAiInsight] = useState<string>('');
+  const [isLoadingInsight, setIsLoadingInsight] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const stock = stockConfig[stockId];
+
+  useEffect(() => {
+    const fetchInsight = async () => {
+      if (!stockId) return;
+      setIsLoadingInsight(true);
+      setAiInsight('');
+      setIsExpanded(false);
+      try {
+        const result = await autoTriggerFeedback({ stockTicker: stock.ticker });
+        setAiInsight(result.review);
+      } catch (error) {
+        console.error("Failed to fetch AI insight:", error);
+        setAiInsight("Could not load AI insight at the moment.");
+      } finally {
+        setIsLoadingInsight(false);
+      }
+    };
+    fetchInsight();
+  }, [stockId, stock.ticker]);
+
+  const sentimentStyles = {
+    positive: {
+      label: "Positive Outlook",
+      badgeClass: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700",
+    },
+    negative: {
+      label: "Negative Outlook",
+      badgeClass: "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700",
+    },
+    neutral: {
+      label: "Neutral Sentiment",
+      badgeClass: "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700",
+    }
+  };
+
+  const currentSentiment = sentimentStyles[stock.sentiment];
+
+  if (isLoadingInsight) {
+    return (
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-1/4" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+      </div>
+    );
+  }
+
+  return (
+    <Alert className="relative">
+      <Sparkles className="h-4 w-4" />
+      <AlertTitle className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span>AI Insight</span>
+          <Badge variant="outline" className={cn("text-xs", currentSentiment.badgeClass)}>{currentSentiment.label}</Badge>
+        </div>
+      </AlertTitle>
+      <AlertDescription className={cn(!isExpanded && "line-clamp-2")}>
+        {aiInsight}
+      </AlertDescription>
+      <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-primary text-xs font-semibold mt-2 flex items-center gap-1"
+        >
+          {isExpanded ? "Show less" : "Show more"}
+          {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        </button>
+    </Alert>
+  );
+}
+
 
 function StockHeader({ stockId }: { stockId: StockId }) {
   const stock = stockConfig[stockId];
@@ -179,11 +233,11 @@ function StockHeader({ stockId }: { stockId: StockId }) {
       <div className="flex items-baseline gap-2 pt-2">
         <span className="text-3xl font-bold">{stock.price}</span>
         <span
-          className={`font-semibold flex items-center gap-1 ${
+          className={cn("font-semibold flex items-center gap-1",
             stock.changeType === "positive"
               ? "text-green-600"
               : "text-red-600"
-          }`}
+          )}
         >
           {sentimentIcons[stock.sentiment]}
           {stock.change}
