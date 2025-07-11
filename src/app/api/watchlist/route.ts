@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import type { Stock } from "@/lib/types";
 
@@ -8,7 +9,7 @@ const initialWatchlistData: Omit<Stock, 'price' | 'change' | 'changeType' | 'sen
   { ticker: "RELIANCE", name: "Reliance Industries" },
   { ticker: "SBIN", name: "State Bank of India" },
   { ticker: "ICICIBANK", name: "ICICI Bank Ltd." },
-  { ticker: "BHARTIARTL", name:al: "Bharti Airtel Ltd." },
+  { ticker: "BHARTIARTL", name: "Bharti Airtel Ltd." },
   { ticker: "HINDUNILVR", name: "Hindustan Unilever" },
   { ticker: "LT", name: "Larsen & Toubro" },
   { ticker: "WIPRO", name: "Wipro Ltd." },
