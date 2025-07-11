@@ -1,3 +1,4 @@
+
 import type { SVGProps } from "react";
 
 export function AppLogo(props: SVGProps<SVGSVGElement>) {
@@ -51,4 +52,28 @@ export function AppleIcon(props: SVGProps<SVGSVGElement>) {
       />
     </svg>
   );
+}
+
+export function TrophyIcon(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+        >
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21A3.498 3.498 0 0 1 9 19v1H7v-1a3.498 3.498 0 0 1-1.03-.79A2.001 2.001 0 0 1 7 17v-2.34" />
+            <path d="M15 19v1h2v-1a3.498 3.498 0 0 0-1.03-.79A2.001 2.001 0 0 0 15 17v-2.34" />
+            <path d="M12 12V6.82c0-.6.45-1.12 1.05-.98L15 6.33c.52.12.95.55 1.05.98V12" />
+            <path d="M12 12V6.82c0-.6-.45-1.12-1.05-.98L9 6.33c-.52.12-.95.55-1.05.98V12" />
+            <path d="M12 12h-1a2 2 0 0 0-2 2v1.83c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V14a2 2 0 0 0-2-2Z" />
+        </svg>
+    )
 }

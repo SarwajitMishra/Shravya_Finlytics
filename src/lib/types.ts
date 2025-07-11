@@ -1,3 +1,4 @@
+
 export interface Stock {
   ticker: string;
   name: string;
@@ -27,4 +28,17 @@ export interface StockDetails extends Stock {
   volume: string;
   peRatio: string;
   eps: string;
+}
+
+export interface Achievement {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+    achieved: boolean;
+}
+
+export interface ScoinHistory {
+    date: string;
+    description: string;
+    amount: string;
 }
