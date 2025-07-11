@@ -19,3 +19,12 @@ export interface NewsArticle {
   category: "Economy" | "Earnings" | "Policy" | "Global Impact";
   link: string;
 }
+
+export interface StockDetails extends Stock {
+  id: string;
+  ticker: string;
+  data: { date: string, close: number, open: number, high: number, low: number }[];
+  volume: string;
+  peRatio: string;
+  eps: string;
+}
