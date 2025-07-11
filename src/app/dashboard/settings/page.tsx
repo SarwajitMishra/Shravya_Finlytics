@@ -212,7 +212,7 @@ export default function SettingsPage() {
                       <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                       <AlertDialogDescription>
                         This action is irreversible and will permanently delete your account, watchlist, and all associated data.
-                      </CardDescription>
+                      </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>

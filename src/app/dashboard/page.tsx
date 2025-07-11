@@ -1,3 +1,4 @@
+
 import {
   Bell,
   CandlestickChart,
@@ -48,7 +49,7 @@ import Link from 'next/link';
 export default function DashboardPage() {
   return (
     <SidebarProvider>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen">
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
@@ -106,7 +107,7 @@ export default function DashboardPage() {
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1">
           <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background/80 backdrop-blur-sm sm:px-6">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="md:hidden" />
@@ -129,12 +130,6 @@ export default function DashboardPage() {
                 <span className="font-semibold">1,250</span>
                 <span className="text-sm text-muted-foreground">S-Coins</span>
               </div>
-              <Link href="/dashboard/settings">
-                <Button variant="ghost" size="icon">
-                    <Settings className="w-5 h-5" />
-                    <span className="sr-only">Settings</span>
-                </Button>
-              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative p-0 rounded-full h-9 w-9">
@@ -175,6 +170,12 @@ export default function DashboardPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Link href="/dashboard/settings">
+                <Button variant="ghost" size="icon">
+                    <Settings className="w-5 h-5" />
+                    <span className="sr-only">Settings</span>
+                </Button>
+              </Link>
             </div>
           </header>
 
