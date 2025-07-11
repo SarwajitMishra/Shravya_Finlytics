@@ -1,31 +1,24 @@
 "use client";
 
 import {
-  Bar,
-  BarChart,
+  BarChart as BarChartIcon,
   CandlestickChart as CandlestickChartIcon,
   LineChart as LineChartIcon,
-  TrendingUp,
 } from "lucide-react";
 import {
-  Area,
-  AreaChart,
   BarChart as RechartsBarChart,
   CartesianGrid,
-  Cell,
-  Label,
   Line,
   LineChart as RechartsLineChart,
-  ReferenceLine,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  ResponsiveContainer
+  Bar,
 } from "recharts";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -34,7 +27,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 
 const infosysData = [
   { date: "Oct 23", close: 1450, open: 1420, high: 1460, low: 1410 },
@@ -152,7 +144,7 @@ function ChartViews({ data }: { data: typeof infosysData }) {
         <TabsList>
           <TabsTrigger value="candle"><CandlestickChartIcon/></TabsTrigger>
           <TabsTrigger value="line"><LineChartIcon/></TabsTrigger>
-          <TabsTrigger value="bar"><Bar/></TabsTrigger>
+          <TabsTrigger value="bar"><BarChartIcon/></TabsTrigger>
         </TabsList>
       </div>
 
@@ -180,22 +172,26 @@ function ChartViews({ data }: { data: typeof infosysData }) {
           </ResponsiveContainer>
         </TabsContent>
         <TabsContent value="line">
-          <RechartsLineChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="date" tickLine={false} axisLine={false} />
-            <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
-            <Tooltip content={<ChartTooltipContent />} />
-            <Line type="monotone" dataKey="close" stroke="var(--color-close)" strokeWidth={2} dot={false} />
-          </RechartsLineChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsLineChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="date" tickLine={false} axisLine={false} />
+              <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
+              <Tooltip content={<ChartTooltipContent />} />
+              <Line type="monotone" dataKey="close" stroke="var(--color-close)" strokeWidth={2} dot={false} />
+            </RechartsLineChart>
+          </ResponsiveContainer>
         </TabsContent>
         <TabsContent value="bar">
-          <RechartsBarChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="date" tickLine={false} axisLine={false} />
-            <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
-            <Tooltip content={<ChartTooltipContent />} />
-            <RechartsBarChart dataKey="close" fill="var(--color-close)" />
-          </RechartsBarChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsBarChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="date" tickLine={false} axisLine={false} />
+              <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
+              <Tooltip content={<ChartTooltipContent />} />
+              <Bar dataKey="close" fill="var(--color-close)" />
+            </RechartsBarChart>
+          </ResponsiveContainer>
         </TabsContent>
       </ChartContainer>
     </Tabs>
@@ -208,16 +204,25 @@ const CandlestickShape = (props: any) => {
   const isBullish = close > open;
   const fill = isBullish ? "hsl(var(--chart-2))" : "hsl(var(--destructive))";
   const stroke = fill;
+  
+  const wickY1 = y + height * ((high - Math.max(open, close)) / (high - low));
+  const wickY2 = y + height * ((Math.min(open, close) - low) / (high - low));
 
-  const yMax = Math.max(open, close);
-  const yMin = Math.min(open, close);
+  const bodyY = y + height * ((Math.max(open, close) - Math.max(open, close)) / (high-low));
+  const bodyHeight = height * (Math.abs(open - close) / (high - low))
 
   return (
     <g>
       {/* Wick */}
-      <line x1={x + width / 2} y1={y} x2={x + width / 2} y2={y + height} stroke={stroke} />
+      <line 
+        x1={x + width / 2} 
+        y1={y}
+        x2={x + width / 2} 
+        y2={y + height}
+        stroke={stroke} 
+        strokeWidth={1} />
       {/* Body */}
-      <rect x={x} y={yMin} width={width} height={yMax - yMin} fill={fill} />
+      <rect x={x} y={isBullish ? y + height * ((high - close) / (high - low)) : y + height * ((high - open) / (high - low))} width={width} height={Math.abs(y - (y + bodyHeight)) || 1} fill={fill} />
     </g>
   );
 };
