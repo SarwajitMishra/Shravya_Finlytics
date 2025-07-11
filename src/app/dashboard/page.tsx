@@ -47,7 +47,7 @@ import Link from 'next/link';
 export default function DashboardPage() {
   return (
     <SidebarProvider>
-      <div className="h-screen flex overflow-hidden">
+      <div className="h-screen flex">
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
@@ -109,7 +109,7 @@ export default function DashboardPage() {
           </SidebarFooter>
         </Sidebar>
 
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1">
           <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background/80 backdrop-blur-sm sm:px-6">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="md:hidden" />
