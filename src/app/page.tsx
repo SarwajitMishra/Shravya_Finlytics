@@ -44,11 +44,12 @@ import Watchlist from '@/components/dashboard/watchlist';
 import EconomicEvents from '@/components/dashboard/economic-events';
 import MarketNews from '@/components/dashboard/market-news';
 import { AppLogo } from '@/components/icons';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function DashboardPage() {
   return (
     <SidebarProvider>
-      <div className="min-h-screen">
+      <div className="h-screen flex overflow-hidden">
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
@@ -110,7 +111,7 @@ export default function DashboardPage() {
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset>
+        <div className="flex flex-col flex-1 overflow-hidden">
           <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background/80 backdrop-blur-sm sm:px-6">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="md:hidden" />
@@ -169,32 +170,34 @@ export default function DashboardPage() {
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-6">
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2">
-                <StockChart />
-              </div>
-              <div className="lg:row-span-2">
-                <InvestmentAssistant />
-              </div>
-              <div className="lg:col-span-2">
-                <Watchlist />
-              </div>
-            </div>
-            <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
-              <MarketNews />
-              <EconomicEvents />
-              <Card>
-                <CardHeader>
-                  <CardTitle>Portfolio Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Your portfolio insights will be displayed here.</p>
-                </CardContent>
-              </Card>
+          <main className="flex-1 overflow-y-auto">
+            <div className="p-4 sm:p-6">
+                <div className="grid gap-6 lg:grid-cols-3">
+                <div className="lg:col-span-2">
+                    <StockChart />
+                </div>
+                <div className="lg:row-span-2">
+                    <InvestmentAssistant />
+                </div>
+                <div className="lg:col-span-2">
+                    <Watchlist />
+                </div>
+                </div>
+                <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
+                <MarketNews />
+                <EconomicEvents />
+                <Card>
+                    <CardHeader>
+                    <CardTitle>Portfolio Overview</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                    <p className="text-sm text-muted-foreground">Your portfolio insights will be displayed here.</p>
+                    </CardContent>
+                </Card>
+                </div>
             </div>
           </main>
-        </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   );
