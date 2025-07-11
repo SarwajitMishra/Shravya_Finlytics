@@ -1,7 +1,28 @@
-import { redirect } from 'next/navigation';
+
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function RootPage() {
-  // For now, we'll just redirect to the dashboard.
-  // In the future, this could be a landing page or check for authentication.
-  redirect('/dashboard');
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading) {
+            if (user) {
+                router.replace('/dashboard');
+            } else {
+                router.replace('/login');
+            }
+        }
+    }, [user, loading, router]);
+
+    return (
+        <div className="flex h-screen w-full items-center justify-center">
+            <Skeleton className="h-16 w-16 rounded-full animate-pulse" />
+        </div>
+    );
 }

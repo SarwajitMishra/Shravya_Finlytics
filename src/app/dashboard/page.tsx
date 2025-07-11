@@ -1,4 +1,6 @@
 
+'use client';
+
 import {
   Bell,
   CandlestickChart,
@@ -44,8 +46,20 @@ import MarketNews from '@/components/dashboard/market-news';
 import PortfolioOverview from '@/components/dashboard/portfolio-overview';
 import { AppLogo } from '@/components/icons';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
+
   return (
     <SidebarProvider>
       <div className="flex h-screen bg-background">
@@ -123,16 +137,16 @@ export default function DashboardPage() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative p-0 rounded-full h-9 w-9">
                     <Avatar className="w-9 h-9">
-                      <AvatarImage src="https://i.pravatar.cc/100?u=shravya" alt="User" data-ai-hint="profile" />
-                      <AvatarFallback>SF</AvatarFallback>
+                      <AvatarImage src={user?.photoURL || "https://i.pravatar.cc/100?u=shravya"} alt={user?.displayName || "User"} data-ai-hint="profile" />
+                      <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">Shravya</p>
-                      <p className="text-xs leading-none text-muted-foreground">shravya@example.com</p>
+                      <p className="text-sm font-medium leading-none">{user?.displayName || 'Welcome'}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -169,11 +183,9 @@ export default function DashboardPage() {
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/login">
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                       <LogOut className="mr-2" />
                       <span>Log out</span>
-                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

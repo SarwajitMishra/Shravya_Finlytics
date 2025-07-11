@@ -35,6 +35,7 @@ import type { Achievement, ScoinHistory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
 
 const achievements: Achievement[] = [
     { icon: <Star className="w-5 h-5 text-yellow-500" />, title: "Stock Watcher", description: "5 stocks in watchlist", achieved: true },
@@ -50,6 +51,8 @@ const scoinHistory: ScoinHistory[] = [
 
 export default function ProfilePage() {
     const router = useRouter();
+    const { user } = useAuth();
+
   return (
     <div className="p-4 sm:p-6 space-y-6">
         <div className="flex items-center gap-4">
@@ -64,13 +67,13 @@ export default function ProfilePage() {
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-20 w-20 border-2 border-primary">
-              <AvatarImage src="https://i.pravatar.cc/150?u=shravya" alt="Shravya" data-ai-hint="woman smiling" />
-              <AvatarFallback>S</AvatarFallback>
+              <AvatarImage src={user?.photoURL || "https://i.pravatar.cc/150?u=shravya"} alt={user?.displayName || "User"} data-ai-hint="woman smiling" />
+              <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle className="text-3xl font-headline">Shravya</CardTitle>
-              <CardDescription className="text-base text-muted-foreground">shravya@example.com</CardDescription>
-              <p className="text-xs text-muted-foreground mt-1">Member since: Aug 1, 2024</p>
+              <CardTitle className="text-3xl font-headline">{user?.displayName || "User"}</CardTitle>
+              <CardDescription className="text-base text-muted-foreground">{user?.email}</CardDescription>
+              <p className="text-xs text-muted-foreground mt-1">Member since: {user?.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : 'N/A'}</p>
             </div>
           </div>
           <Badge variant="outline" className="text-lg py-1 px-4 border-green-500 text-green-600">
