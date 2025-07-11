@@ -34,7 +34,6 @@ export async function GET() {
     const articles = data.articles.map((article: any): NewsArticle => ({
       title: article.title,
       summary: article.description || 'No summary available.',
-      // All news from this business endpoint will be categorized as 'Economy' for consistency
       category: 'Economy',
       link: article.url,
     }));
