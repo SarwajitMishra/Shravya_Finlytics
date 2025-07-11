@@ -21,6 +21,8 @@ import { ArrowUpRight, ArrowDownRight, Star } from "lucide-react";
 import type { Stock } from "@/lib/types";
 import { Skeleton } from "../ui/skeleton";
 
+const POLLING_INTERVAL = 5000; // 5 seconds
+
 export default function Watchlist() {
   const [data, setData] = useState<Stock[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +30,11 @@ export default function Watchlist() {
 
   useEffect(() => {
     async function fetchData() {
+      // Don't show skeleton on subsequent polls, only on initial load.
+      // If data is already present, loading is more of a background task.
+      if (data.length === 0) {
+        setLoading(true);
+      }
       try {
         const response = await fetch('/api/watchlist');
         if (!response.ok) {
@@ -35,13 +42,20 @@ export default function Watchlist() {
         }
         const watchlistData = await response.json();
         setData(watchlistData);
+        setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {
-        setLoading(false);
+        if (data.length === 0) {
+          setLoading(false);
+        }
       }
     }
-    fetchData();
+    
+    fetchData(); // Fetch immediately on mount
+    const intervalId = setInterval(fetchData, POLLING_INTERVAL); // Then poll every 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
   return (
@@ -51,7 +65,7 @@ export default function Watchlist() {
           <Star />
           <span>My Watchlist</span>
         </CardTitle>
-        <CardDescription>Your handpicked stocks to watch.</CardDescription>
+        <CardDescription>Your handpicked stocks to watch. Updates automatically.</CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -89,7 +103,7 @@ export default function Watchlist() {
                   </TableCell>
                   <TableCell>{stock.price}</TableCell>
                   <TableCell
-                    className={`text-right font-semibold ${
+                    className={`text-right font-semibold transition-colors duration-300 ${
                       stock.changeType === "positive"
                         ? "text-green-600"
                         : "text-red-600"
@@ -103,7 +117,7 @@ export default function Watchlist() {
                   <TableCell className="text-center">
                     <Badge
                       variant="outline"
-                      className={`capitalize ${
+                      className={`capitalize transition-colors duration-300 ${
                         stock.sentiment === "positive"
                           ? "border-green-500 text-green-700"
                           : stock.sentiment === "negative"

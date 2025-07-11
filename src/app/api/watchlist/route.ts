@@ -1,54 +1,54 @@
 import { NextResponse } from 'next/server';
 import type { Stock } from "@/lib/types";
 
-const watchlistData: Stock[] = [
-  {
-    ticker: "TCS",
-    name: "Tata Consultancy",
-    price: "₹3,850.10",
-    change: "+45.50 (1.20%)",
-    changeType: "positive",
-    sentiment: "positive",
-  },
-  {
-    ticker: "HDFCBANK",
-    name: "HDFC Bank Ltd.",
-    price: "₹1,520.75",
-    change: "-12.30 (0.80%)",
-    changeType: "negative",
-    sentiment: "neutral",
-  },
-  {
-    ticker: "INFY",
-    name: "Infosys Ltd.",
-    price: "₹1,525.30",
-    change: "+20.10 (1.34%)",
-    changeType: "positive",
-    sentiment: "positive",
-  },
-  {
-    ticker: "RELIANCE",
-    name: "Reliance Industries",
-    price: "₹2,340.50",
-    change: "-5.20 (0.22%)",
-    changeType: "negative",
-    sentiment: "negative",
-  },
-  {
-    ticker: "SBIN",
-    name: "State Bank of India",
-    price: "₹650.00",
-    change: "+2.50 (0.39%)",
-    changeType: "positive",
-    sentiment: "neutral",
-  },
+const initialWatchlistData: Omit<Stock, 'price' | 'change' | 'changeType' | 'sentiment'>[] = [
+  { ticker: "TCS", name: "Tata Consultancy" },
+  { ticker: "HDFCBANK", name: "HDFC Bank Ltd." },
+  { ticker: "INFY", name: "Infosys Ltd." },
+  { ticker: "RELIANCE", name: "Reliance Industries" },
+  { ticker: "SBIN", name: "State Bank of India" },
+  { ticker: "ICICIBANK", name: "ICICI Bank Ltd." },
+  { ticker: "BHARTIARTL", name:al: "Bharti Airtel Ltd." },
+  { ticker: "HINDUNILVR", name: "Hindustan Unilever" },
+  { ticker: "LT", name: "Larsen & Toubro" },
+  { ticker: "WIPRO", name: "Wipro Ltd." },
 ];
+
+// Helper to generate a random number within a range
+const getRandom = (min: number, max: number) => Math.random() * (max - min) + min;
+
+// Function to generate dynamic stock data
+const generateDynamicStockData = (): Stock[] => {
+  return initialWatchlistData.map(stock => {
+    const basePrice = stock.ticker === 'INFY' ? 1500 : stock.ticker === 'RELIANCE' ? 2300 : getRandom(100, 4000);
+    const priceFluctuation = getRandom(-50, 50);
+    const newPrice = basePrice + priceFluctuation;
+    
+    const change = getRandom(-25, 25);
+    const percentageChange = (change / newPrice) * 100;
+
+    let sentiment: "positive" | "negative" | "neutral" = "neutral";
+    if (percentageChange > 0.5) sentiment = "positive";
+    if (percentageChange < -0.5) sentiment = "negative";
+
+    return {
+      ...stock,
+      price: `₹${newPrice.toFixed(2)}`,
+      change: `${change.toFixed(2)} (${percentageChange.toFixed(2)}%)`,
+      changeType: change >= 0 ? "positive" : "negative",
+      sentiment: sentiment,
+    };
+  });
+};
+
 
 export async function GET() {
   // In a real application, you would fetch this data from a database
-  // or a third-party financial API.
-  // We add a small delay to simulate network latency.
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // or a third-party financial API. Here we simulate it.
+  const dynamicData = generateDynamicStockData();
   
-  return NextResponse.json(watchlistData);
+  // We add a small delay to simulate network latency.
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  return NextResponse.json(dynamicData);
 }
