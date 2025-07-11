@@ -45,10 +45,18 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SettingsPage() {
     const router = useRouter();
     const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
 
     const handleThemeChange = (newTheme: string) => {
       const currentMode = theme?.includes('dark') ? 'dark' : 'light';
@@ -84,54 +92,81 @@ export default function SettingsPage() {
           <CardDescription>Customize the look and feel of your interface.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-                <Label htmlFor="theme-mode" className="flex flex-col gap-1">
-                    <span>Mode</span>
-                    <span className="text-xs font-normal text-muted-foreground">Toggle between light and dark themes.</span>
-                </Label>
-                <div className="flex items-center gap-2">
-                    <Sun className="h-5 w-5" />
-                    <Switch
-                        id="theme-mode"
-                        checked={theme?.includes('dark')}
-                        onCheckedChange={handleModeToggle}
-                    />
-                    <Moon className="h-5 w-5" />
+            {!mounted ? (
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-16" />
+                            <Skeleton className="h-3 w-48" />
+                        </div>
+                        <Skeleton className="h-6 w-11 rounded-full" />
+                    </div>
+                    <Separator/>
+                     <div className="space-y-3">
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-12" />
+                            <Skeleton className="h-3 w-40" />
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <Skeleton className="h-20 w-full rounded-lg" />
+                            <Skeleton className="h-20 w-full rounded-lg" />
+                            <Skeleton className="h-20 w-full rounded-lg" />
+                            <Skeleton className="h-20 w-full rounded-lg" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <Separator />
-            <div className="space-y-3">
-                <Label htmlFor="theme-color" className="flex flex-col gap-1">
-                    <span>Color</span>
-                    <span className="text-xs font-normal text-muted-foreground">Select your preferred accent color.</span>
-                </Label>
-                <RadioGroup 
-                    defaultValue={theme?.replace('-dark', '').replace('-light', '') || 'stone'}
-                    onValueChange={(value) => handleThemeChange(value)}
-                    className="grid grid-cols-2 sm:grid-cols-4 gap-4"
-                >
-                    <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
-                         <RadioGroupItem value="stone" id="theme-stone" className="sr-only"/>
-                         <div className="rounded-full w-10 h-10 bg-stone-500 border-2 border-muted" />
-                         <span className="font-normal">Stone</span>
-                    </Label>
-                     <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
-                         <RadioGroupItem value="emerald" id="theme-emerald" className="sr-only"/>
-                         <div className="rounded-full w-10 h-10 bg-emerald-500 border-2 border-muted" />
-                         <span className="font-normal">Emerald</span>
-                    </Label>
-                    <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
-                         <RadioGroupItem value="rose" id="theme-rose" className="sr-only"/>
-                         <div className="rounded-full w-10 h-10 bg-rose-500 border-2 border-muted" />
-                         <span className="font-normal">Rose</span>
-                    </Label>
-                    <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
-                         <RadioGroupItem value="blue" id="theme-blue" className="sr-only"/>
-                         <div className="rounded-full w-10 h-10 bg-blue-500 border-2 border-muted" />
-                         <span className="font-normal">Blue</span>
-                    </Label>
-                </RadioGroup>
-            </div>
+            ) : (
+                <>
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="theme-mode" className="flex flex-col gap-1">
+                            <span>Mode</span>
+                            <span className="text-xs font-normal text-muted-foreground">Toggle between light and dark themes.</span>
+                        </Label>
+                        <div className="flex items-center gap-2">
+                            <Sun className="h-5 w-5" />
+                            <Switch
+                                id="theme-mode"
+                                checked={theme?.includes('dark')}
+                                onCheckedChange={handleModeToggle}
+                            />
+                            <Moon className="h-5 w-5" />
+                        </div>
+                    </div>
+                    <Separator />
+                    <div className="space-y-3">
+                        <Label htmlFor="theme-color" className="flex flex-col gap-1">
+                            <span>Color</span>
+                            <span className="text-xs font-normal text-muted-foreground">Select your preferred accent color.</span>
+                        </Label>
+                        <RadioGroup 
+                            defaultValue={theme?.replace('-dark', '').replace('-light', '') || 'stone'}
+                            onValueChange={handleThemeChange}
+                            className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+                        >
+                            <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
+                                <RadioGroupItem value="stone" id="theme-stone" className="sr-only"/>
+                                <div className="rounded-full w-10 h-10 bg-stone-500 border-2 border-muted" />
+                                <span className="font-normal">Stone</span>
+                            </Label>
+                            <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
+                                <RadioGroupItem value="emerald" id="theme-emerald" className="sr-only"/>
+                                <div className="rounded-full w-10 h-10 bg-emerald-500 border-2 border-muted" />
+                                <span className="font-normal">Emerald</span>
+                            </Label>
+                            <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
+                                <RadioGroupItem value="rose" id="theme-rose" className="sr-only"/>
+                                <div className="rounded-full w-10 h-10 bg-rose-500 border-2 border-muted" />
+                                <span className="font-normal">Rose</span>
+                            </Label>
+                            <Label className="flex flex-col items-center gap-2 -m-2 p-2 rounded-lg cursor-pointer hover:bg-accent">
+                                <RadioGroupItem value="blue" id="theme-blue" className="sr-only"/>
+                                <div className="rounded-full w-10 h-10 bg-blue-500 border-2 border-muted" />
+                                <span className="font-normal">Blue</span>
+                            </Label>
+                        </RadioGroup>
+                    </div>
+                </>
+            )}
         </CardContent>
       </Card>
       
@@ -273,5 +308,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-    
