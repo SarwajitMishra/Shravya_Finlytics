@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -6,41 +10,35 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Newspaper } from "lucide-react";
+import { Newspaper, Rss } from "lucide-react";
 import type { NewsArticle } from "@/lib/types";
-
-const newsData: NewsArticle[] = [
-  {
-    title: "Sensex, Nifty hit fresh record highs",
-    summary:
-      "Indian benchmark indices soared to new peaks, driven by strong inflows from foreign institutional investors and positive global cues.",
-    category: "Economy",
-    link: "#",
-  },
-  {
-    title: "IT majors report mixed Q2 earnings",
-    summary:
-      "While some IT giants beat estimates on strong deal wins, others faced margin pressures due to wage hikes and project ramp-ups.",
-    category: "Earnings",
-    link: "#",
-  },
-  {
-    title: "SEBI mulls stricter norms for derivatives",
-    summary:
-      "The market regulator is considering new rules to curb speculative trading in the F&O segment, aiming to protect retail investors.",
-    category: "Policy",
-    link: "#",
-  },
-  {
-    title: "Global supply chain woes ease",
-    summary:
-      "Easing of global supply chain disruptions is expected to cool down inflation and boost manufacturing output in the coming quarters.",
-    category: "Global Impact",
-    link: "#",
-  },
-];
+import { Skeleton } from '../ui/skeleton';
 
 export default function MarketNews() {
+  const [newsData, setNewsData] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchNews() {
+      setLoading(true);
+      try {
+        const response = await fetch('/api/news');
+        if (!response.ok) {
+          throw new Error('Failed to fetch news data');
+        }
+        const data = await response.json();
+        setNewsData(data);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchNews();
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -49,34 +47,46 @@ export default function MarketNews() {
           <span>Financial News Summary</span>
         </CardTitle>
         <CardDescription>
-          AI-powered summaries of the latest market news.
+          The latest headlines from top business sources.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {newsData.map((article, index) => (
-            <div key={index} className="p-3 rounded-lg hover:bg-muted/50">
-              <div className="flex items-center justify-between mb-1">
-                <h4 className="font-semibold">{article.title}</h4>
-                <Badge
-                  variant={
-                    article.category === "Economy" ? "default" : "secondary"
-                  }
-                  className="capitalize"
-                >
-                  {article.category}
-                </Badge>
+        {loading ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="p-3">
+                <Skeleton className="h-5 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6 mt-1" />
               </div>
-              <p className="text-sm text-muted-foreground">{article.summary}</p>
-              <a
+            ))}
+          </div>
+        ) : error ? (
+            <p className="text-red-500 text-center">{error}</p>
+        ) : (
+          <div className="space-y-4">
+            {newsData.map((article, index) => (
+              <a 
+                key={index} 
                 href={article.link}
-                className="text-xs text-primary hover:underline mt-1 inline-block"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block p-3 rounded-lg hover:bg-muted/50 transition-colors"
               >
-                Read more
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="font-semibold">{article.title}</h4>
+                  <Badge
+                    variant="secondary"
+                    className="capitalize hidden sm:inline-flex"
+                  >
+                    {article.category}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground line-clamp-2">{article.summary}</p>
               </a>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
