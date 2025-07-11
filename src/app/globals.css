@@ -75,7 +75,7 @@
     --sidebar-ring: 0 0% 98%;
   }
 
-  .theme-blue {
+  .theme-blue, .theme-blue-light {
     --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
     --ring: 217 91% 60%;
@@ -93,7 +93,7 @@
     --sidebar-primary-foreground: 210 40% 98%;
   }
   
-  .theme-emerald {
+  .theme-emerald, .theme-emerald-light {
     --primary: 142 76% 36%;
     --primary-foreground: 142 76% 96%;
     --ring: 142 76% 36%;
@@ -111,7 +111,7 @@
     --sidebar-primary-foreground: 142 71% 95%;
   }
 
-  .theme-rose {
+  .theme-rose, .theme-rose-light {
     --primary: 346 84% 61%;
     --primary-foreground: 346 84% 98%;
     --ring: 346 84% 61%;
