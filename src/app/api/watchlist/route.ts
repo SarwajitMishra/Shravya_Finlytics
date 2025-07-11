@@ -82,4 +82,3 @@ export async function GET() {
     const simulatedData = initialWatchlistData.map(generateSimulatedStockData);
     return NextResponse.json(simulatedData);
   }
-}

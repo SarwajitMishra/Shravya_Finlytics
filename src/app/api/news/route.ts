@@ -42,6 +42,4 @@ export async function GET() {
   } catch (error) {
     console.error("Error fetching from NewsAPI:", error);
     // Fallback to sample data in case of error
-    return NextResponse.json(sampleNews, { status: 500 });
-  }
-}
+    return NextResponse.json(sample
