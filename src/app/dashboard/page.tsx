@@ -104,22 +104,6 @@ export default function DashboardPage() {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
-          <SidebarFooter>
-            <SidebarMenu>
-               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/profile">
-                  <User />
-                  <span>Profile</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/settings">
-                  <Settings />
-                  <span>Settings</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
         </Sidebar>
 
         <div className="flex flex-col flex-1 overflow-hidden">
@@ -140,11 +124,17 @@ export default function DashboardPage() {
                 <Bell className="w-5 h-5" />
                 <span className="sr-only">Notifications</span>
               </Button>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card">
+               <div className="hidden items-center gap-2 px-3 py-1.5 rounded-full bg-card sm:flex">
                 <Coins className="w-5 h-5 text-yellow-500" />
                 <span className="font-semibold">1,250</span>
                 <span className="text-sm text-muted-foreground">S-Coins</span>
               </div>
+              <Link href="/dashboard/settings">
+                <Button variant="ghost" size="icon">
+                    <Settings className="w-5 h-5" />
+                    <span className="sr-only">Settings</span>
+                </Button>
+              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative p-0 rounded-full h-9 w-9">

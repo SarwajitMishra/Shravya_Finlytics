@@ -41,19 +41,32 @@ import {
   Download,
   Trash2,
   Filter,
+  ArrowLeft,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
+    const router = useRouter();
+
+  const applyTheme = (theme: string) => {
+    const root = document.documentElement;
+    root.classList.remove('theme-ocean', 'theme-forest', 'dark');
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else if (theme !== 'light') {
+      root.classList.add(`theme-${theme}`);
+    }
+  };
+
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-4xl mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-3xl font-headline">Settings</CardTitle>
-          <CardDescription>
-            Manage your account, preferences, and notification settings.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+        <div className="flex items-center gap-4">
+             <Button variant="outline" size="icon" onClick={() => router.back()}>
+                <ArrowLeft />
+                <span className="sr-only">Back</span>
+            </Button>
+            <h1 className="text-2xl font-bold">Settings</h1>
+        </div>
 
       {/* General Preferences */}
       <Card>
@@ -84,13 +97,19 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <Label htmlFor="theme" className="flex flex-col gap-1">
               <span>Theme</span>
-              <span className="text-xs font-normal text-muted-foreground">Toggle between light and dark mode</span>
+              <span className="text-xs font-normal text-muted-foreground">Select your interface theme</span>
             </Label>
-            <div className="flex items-center gap-2">
-                <span>Light</span>
-                <Switch id="theme" />
-                <span>Dark</span>
-            </div>
+             <Select defaultValue="light" onValueChange={applyTheme}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="ocean">Ocean</SelectItem>
+                <SelectItem value="forest">Forest</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -193,7 +212,7 @@ export default function SettingsPage() {
                       <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                       <AlertDialogDescription>
                         This action is irreversible and will permanently delete your account, watchlist, and all associated data.
-                      </AlertDialogDescription>
+                      </CardDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>

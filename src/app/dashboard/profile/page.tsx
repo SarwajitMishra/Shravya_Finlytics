@@ -1,4 +1,5 @@
 
+'use client';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,9 +29,12 @@ import {
   AlertTriangle,
   Copy,
   Share2,
+  ArrowLeft,
 } from "lucide-react";
 import type { Achievement, ScoinHistory } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const achievements: Achievement[] = [
     { icon: <Star className="w-5 h-5 text-yellow-500" />, title: "Stock Watcher", description: "5 stocks in watchlist", achieved: true },
@@ -45,8 +49,16 @@ const scoinHistory: ScoinHistory[] = [
 ]
 
 export default function ProfilePage() {
+    const router = useRouter();
   return (
     <div className="p-4 sm:p-6 space-y-6">
+        <div className="flex items-center gap-4">
+             <Button variant="outline" size="icon" onClick={() => router.back()}>
+                <ArrowLeft />
+                <span className="sr-only">Back</span>
+            </Button>
+            <h1 className="text-2xl font-bold">Profile</h1>
+        </div>
       {/* User Info Header */}
       <Card>
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
