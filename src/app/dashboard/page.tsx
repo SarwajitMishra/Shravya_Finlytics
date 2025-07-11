@@ -68,7 +68,7 @@ export default function DashboardPage() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#">
+                <SidebarMenuButton href="/dashboard/markets">
                   <CandlestickChart />
                   <span>Markets</span>
                 </SidebarMenuButton>
@@ -80,25 +80,25 @@ export default function DashboardPage() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#">
+                <SidebarMenuButton href="/dashboard/news">
                   <Newspaper />
                   <span>News</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#">
+                <SidebarMenuButton href="/dashboard/watchlist">
                   <Star />
                   <span>Watchlist</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#">
+                <SidebarMenuButton href="/dashboard/portfolio">
                   <Wallet />
                   <span>Portfolio</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#">
+                <SidebarMenuButton href="/dashboard/history">
                   <History />
                   <span>History</span>
                 </SidebarMenuButton>
@@ -107,7 +107,7 @@ export default function DashboardPage() {
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 overflow-y-auto">
           <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background/80 backdrop-blur-sm sm:px-6">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="md:hidden" />
@@ -179,7 +179,7 @@ export default function DashboardPage() {
             </div>
           </header>
 
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1">
             <div className="p-4 sm:p-6">
                 <div className="grid gap-6 lg:grid-cols-3">
                     <div className="lg:col-span-2">
