@@ -6,7 +6,7 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDECQuiac9obpasO2BLpf5hIfneqSxvpXw",
+  apiKey: "YOUR_NEW_API_KEY",
   authDomain: "shravya-finlytics.firebaseapp.com",
   projectId: "shravya-finlytics",
   storageBucket: "shravya-finlytics.firebasestorage.app",
