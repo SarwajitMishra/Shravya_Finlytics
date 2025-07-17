@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect, type FormEvent } from "react";
@@ -58,8 +59,8 @@ export default function InvestmentAssistant() {
     try {
       let response;
       if (input.toLowerCase().includes("review") || input.toLowerCase().includes("infosys") || input.toLowerCase().includes("reliance")) {
-        const stockMatch = input.match(/(?:review|invest in|performance of)\s+([A-Z]+)/i);
-        const stockTicker = stockMatch ? stockMatch[1] : (input.toLowerCase().includes("infosys") ? "INFY" : "RELIANCE");
+        const stockMatch = input.match(/(?:review|invest in|performance of)\s+([A-Z.]+)/i);
+        const stockTicker = stockMatch ? stockMatch[1] : (input.toLowerCase().includes("infosys") ? "INFY.NS" : "RELIANCE.NS");
         
         const feedback = await autoTriggerFeedback({ stockTicker });
         response = { advice: feedback.review };

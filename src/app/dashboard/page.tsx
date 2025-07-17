@@ -193,21 +193,15 @@ export default function DashboardPage() {
           </header>
 
           <main className="flex-1 p-4 sm:p-6">
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                <div className="space-y-6 xl:col-span-2">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="grid gap-6 lg:col-span-2">
                     <StockChart />
-                </div>
-                <div className="space-y-6 md:col-span-1">
-                    <Watchlist />
-                </div>
-                <div className="space-y-6 md:col-span-2 xl:col-span-1">
-                     <PortfolioOverview />
-                </div>
-                <div className="space-y-6 md:col-span-1 xl:col-span-2">
                     <MarketNews />
-                </div>
-                 <div className="space-y-6 md:col-span-1 xl:col-span-3">
                     <EconomicEvents />
+                </div>
+                <div className="grid gap-6 lg:col-span-1">
+                    <Watchlist />
+                    <PortfolioOverview />
                 </div>
             </div>
           </main>
