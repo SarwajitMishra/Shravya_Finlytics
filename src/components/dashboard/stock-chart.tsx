@@ -7,7 +7,6 @@ import {
   CandlestickChart as CandlestickChartIcon,
   LineChart as LineChartIcon,
   Sparkles,
-  BrainCircuit,
   PieChart,
   TrendingUp,
   TrendingDown,
@@ -44,92 +43,32 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { autoTriggerFeedback } from "@/ai/flows/auto-trigger-feedback";
-import type { StockDetails } from '@/lib/types';
+import type { StockChartData, StockDetails } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 
 
-const infosysData = [
-  { date: "Oct 23", close: 1450, open: 1420, high: 1460, low: 1410 },
-  { date: "Oct 24", close: 1475, open: 1450, high: 1480, low: 1445 },
-  { date: "Oct 25", close: 1460, open: 1475, high: 1485, low: 1455 },
-  { date: "Oct 26", close: 1490, open: 1460, high: 1500, low: 1455 },
-  { date: "Oct 27", close: 1510, open: 1490, high: 1515, low: 1485 },
-  { date: "Oct 30", close: 1505, open: 1510, high: 1520, low: 1500 },
-  { date: "Oct 31", close: 1525, open: 1505, high: 1530, low: 1500 },
-];
-
-const relianceData = [
-  { date: "Oct 23", close: 2250, open: 2230, high: 2260, low: 2225 },
-  { date: "Oct 24", close: 2280, open: 2250, high: 2290, low: 2245 },
-  { date: "Oct 25", close: 2270, open: 2280, high: 2285, low: 2265 },
-  { date: "Oct 26", close: 2300, open: 2270, high: 2310, low: 2265 },
-  { date: "Oct 27", close: 2325, open: 2300, high: 2330, low: 2295 },
-  { date: "Oct 30", close: 2315, open: 2325, high: 2335, low: 2310 },
-  { date: "Oct 31", close: 2340, open: 2315, high: 2345, low: 2310 },
-];
-
-const stockConfig: Record<string, StockDetails> = {
-  infosys: {
-    id: 'infosys',
-    ticker: "INFY",
-    name: "Infosys (INFY)",
-    data: infosysData,
-    price: "₹1,525.30",
-    change: "+20.10 (1.34%)",
-    changeType: "positive",
-    sentiment: "positive",
-    volume: "5.4M",
-    peRatio: "28.5",
-    eps: "53.52",
-  },
-  reliance: {
-    id: 'reliance',
-    ticker: "RELIANCE",
-    name: "Reliance (RELIANCE)",
-    data: relianceData,
-    price: "₹2,340.50",
-    change: "-5.20 (0.22%)",
-    changeType: "negative",
-    sentiment: "negative",
-    volume: "7.8M",
-    peRatio: "26.2",
-    eps: "89.33",
-  },
+type StockId = 'infosys' | 'reliance';
+const stockTickers: Record<StockId, string> = {
+    infosys: 'INFY.NS',
+    reliance: 'RELIANCE.NS'
 };
 
-type StockId = keyof typeof stockConfig;
-
 export default function StockChart() {
-  const [activeStock, setActiveStock] = useState<StockId>("infosys");
+  const [activeStockId, setActiveStockId] = useState<StockId>("infosys");
   
   return (
     <Card className="h-full flex flex-col">
-      <Tabs defaultValue="infosys" onValueChange={(value) => setActiveStock(value as StockId)}>
+       <Tabs defaultValue="infosys" onValueChange={(value) => setActiveStockId(value as StockId)}>
         <CardHeader className="flex flex-col md:flex-row md:items-start md:justify-between">
-          <div>
-            <TabsList className="grid w-full grid-cols-2 mb-2">
-              <TabsTrigger value="infosys">Infosys</TabsTrigger>
-              <TabsTrigger value="reliance">Reliance</TabsTrigger>
-            </TabsList>
-            <TabsContent value="infosys" className="m-0">
-              <StockHeader stockId="infosys" />
-            </TabsContent>
-            <TabsContent value="reliance" className="m-0">
-              <StockHeader stockId="reliance" />
-            </TabsContent>
-          </div>
-          <div className="w-full md:w-auto mt-4 md:mt-0">
-            <SparklineChart data={stockConfig[activeStock].data} changeType={stockConfig[activeStock].changeType} />
-          </div>
+            <StockHeaderAndTabs activeStockId={activeStockId} />
         </CardHeader>
         <CardContent className="p-4 pt-0">
-          
-          <AIInsight stockId={activeStock} />
+          <AIInsight stockId={activeStockId} />
 
           <div className="mt-4">
-            <ChartViews data={stockConfig[activeStock].data} />
+            <ChartViews stockId={activeStockId} />
           </div>
 
           <div className="mt-4 pt-4 border-t flex flex-wrap gap-2 justify-center">
@@ -142,11 +81,103 @@ export default function StockChart() {
   );
 }
 
+function useStockData(stockId: StockId) {
+    const [data, setData] = useState<StockChartData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function fetchStockData() {
+            setLoading(true);
+            setError(null);
+            setData(null);
+
+            const ticker = stockTickers[stockId];
+            const to = Math.floor(Date.now() / 1000);
+            const from = to - (30 * 24 * 60 * 60); // 30 days ago
+
+            try {
+                const response = await fetch(`/api/stock?ticker=${ticker}&from=${from}&to=${to}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch stock data for ${ticker}`);
+                }
+                const stockData = await response.json();
+                setData(stockData);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'An unknown error occurred');
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchStockData();
+    }, [stockId]);
+
+    return { data, loading, error };
+}
+
+
+function StockHeaderAndTabs({ activeStockId }: { activeStockId: StockId }) {
+    const { data, loading, error } = useStockData(activeStockId);
+
+    const sentimentIcons = {
+        positive: <TrendingUp className="text-green-500" />,
+        negative: <TrendingDown className="text-red-500" />,
+        neutral: <Minus className="text-gray-500" />
+    };
+    
+    const getSentiment = (changeType: "positive" | "negative") => {
+        return changeType === 'positive' ? sentimentIcons.positive : sentimentIcons.negative;
+    }
+
+    return (
+         <div className="flex-1">
+             <TabsList className="grid w-full grid-cols-2 mb-2">
+                <TabsTrigger value="infosys">Infosys</TabsTrigger>
+                <TabsTrigger value="reliance">Reliance</TabsTrigger>
+            </TabsList>
+            
+            {loading && <StockHeaderSkeleton />}
+            {error && <div className="text-red-500 p-2">{error}</div>}
+            {data && (
+                <>
+                <CardTitle className="font-headline">{data.name}</CardTitle>
+                <div className="flex items-baseline gap-2 pt-2">
+                    <span className="text-3xl font-bold">{data.price}</span>
+                    <span
+                    className={cn("font-semibold flex items-center gap-1",
+                        data.changeType === "positive"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    )}
+                    >
+                    {getSentiment(data.changeType)}
+                    {data.change}
+                    </span>
+                </div>
+                </>
+            )}
+        </div>
+    );
+}
+
+function StockHeaderSkeleton() {
+    return (
+        <div>
+            <Skeleton className="h-8 w-48 mb-2" />
+            <div className="flex items-baseline gap-2 pt-2">
+                <Skeleton className="h-9 w-32" />
+                <Skeleton className="h-6 w-24" />
+            </div>
+        </div>
+    )
+}
+
+
 function AIInsight({stockId}: {stockId: StockId}) {
   const [aiInsight, setAiInsight] = useState<string>('');
   const [isLoadingInsight, setIsLoadingInsight] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
-  const stock = stockConfig[stockId];
+  const { data: stockData } = useStockData(stockId);
 
   useEffect(() => {
     const fetchInsight = async () => {
@@ -155,7 +186,7 @@ function AIInsight({stockId}: {stockId: StockId}) {
       setAiInsight('');
       setIsExpanded(false);
       try {
-        const result = await autoTriggerFeedback({ stockTicker: stock.ticker });
+        const result = await autoTriggerFeedback({ stockTicker: stockTickers[stockId] });
         setAiInsight(result.review);
       } catch (error) {
         console.error("Failed to fetch AI insight:", error);
@@ -165,7 +196,7 @@ function AIInsight({stockId}: {stockId: StockId}) {
       }
     };
     fetchInsight();
-  }, [stockId, stock.ticker]);
+  }, [stockId]);
 
   const sentimentStyles = {
     positive: {
@@ -176,17 +207,14 @@ function AIInsight({stockId}: {stockId: StockId}) {
       label: "Negative Outlook",
       badgeClass: "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700",
     },
-    neutral: {
-      label: "Neutral Sentiment",
-      badgeClass: "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700",
-    }
   };
+  
+  const currentSentiment = stockData ? sentimentStyles[stockData.changeType] : null;
 
-  const currentSentiment = sentimentStyles[stock.sentiment];
 
   if (isLoadingInsight) {
     return (
-      <div className="space-y-2">
+      <div className="space-y-2 mt-4">
         <Skeleton className="h-4 w-1/4" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-3/4" />
@@ -195,12 +223,12 @@ function AIInsight({stockId}: {stockId: StockId}) {
   }
 
   return (
-    <Alert className="relative">
+    <Alert className="relative mt-4">
       <Sparkles className="h-4 w-4" />
       <AlertTitle className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span>AI Insight</span>
-          <Badge variant="outline" className={cn("text-xs", currentSentiment.badgeClass)}>{currentSentiment.label}</Badge>
+          {currentSentiment && <Badge variant="outline" className={cn("text-xs", currentSentiment.badgeClass)}>{currentSentiment.label}</Badge>}
         </div>
       </AlertTitle>
       <AlertDescription className={cn(!isExpanded && "line-clamp-2")}>
@@ -218,48 +246,27 @@ function AIInsight({stockId}: {stockId: StockId}) {
 }
 
 
-function StockHeader({ stockId }: { stockId: StockId }) {
-  const stock = stockConfig[stockId];
+function ChartViews({ stockId }: { stockId: StockId }) {
+    const { data, loading, error } = useStockData(stockId);
 
-  const sentimentIcons = {
-    positive: <TrendingUp className="text-green-500" />,
-    negative: <TrendingDown className="text-red-500" />,
-    neutral: <Minus className="text-gray-500" />
-  }
-
-  return (
-    <>
-      <CardTitle className="font-headline">{stock.name}</CardTitle>
-      <div className="flex items-baseline gap-2 pt-2">
-        <span className="text-3xl font-bold">{stock.price}</span>
-        <span
-          className={cn("font-semibold flex items-center gap-1",
-            stock.changeType === "positive"
-              ? "text-green-600"
-              : "text-red-600"
-          )}
-        >
-          {sentimentIcons[stock.sentiment]}
-          {stock.change}
-        </span>
-      </div>
-      <div className="flex items-center gap-4 text-sm text-muted-foreground pt-1">
-        <span>Vol: {stock.volume}</span>
-        <span>P/E: {stock.peRatio}</span>
-        <span>EPS: {stock.eps}</span>
-      </div>
-    </>
-  );
-}
-
-
-function ChartViews({ data }: { data: typeof infosysData }) {
   const chartConfig = {
     close: { label: "Close", color: "hsl(var(--chart-1))" },
     open: { label: "Open", color: "hsl(var(--chart-2))" },
     high: { label: "High", color: "hsl(var(--chart-3))" },
     low: { label: "Low", color: "hsl(var(--chart-4))" },
   };
+  
+  const chartData = data?.chartData || [];
+  const changeType = data?.changeType || 'positive';
+
+
+    if (loading) {
+        return <Skeleton className="h-[300px] w-full mt-2" />;
+    }
+
+    if (error) {
+        return <div className="text-red-500 h-[300px] flex items-center justify-center">{error}</div>;
+    }
 
   return (
     <Tabs defaultValue="candle">
@@ -275,16 +282,18 @@ function ChartViews({ data }: { data: typeof infosysData }) {
         <TabsContent value="candle">
           <ResponsiveContainer width="100%" height="100%">
             <RechartsBarChart
-              data={data}
+              data={chartData}
               margin={{ top: 20, right: 20, left: 0, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="date" tickLine={false} axisLine={false} />
+              <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{fontSize: 12}} />
               <YAxis
-                domain={["dataMin - 100", "dataMax + 100"]}
+                domain={["dataMin - 20", "dataMax + 20"]}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value) => `₹${value}`}
+                tick={{fontSize: 12}}
+                width={50}
               />
               <Tooltip
                 cursor={{ fill: "hsl(var(--muted))" }}
@@ -296,23 +305,23 @@ function ChartViews({ data }: { data: typeof infosysData }) {
         </TabsContent>
         <TabsContent value="line">
           <ResponsiveContainer width="100%" height="100%">
-            <RechartsLineChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+            <RechartsLineChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="date" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
+              <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{fontSize: 12}} />
+              <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} tick={{fontSize: 12}} width={50}/>
               <Tooltip content={<ChartTooltipContent />} />
-              <Line type="monotone" dataKey="close" stroke="var(--color-close)" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="close" stroke={cn(changeType === 'positive' ? 'hsl(var(--chart-2))' : 'hsl(var(--destructive))')} strokeWidth={2} dot={false} />
             </RechartsLineChart>
           </ResponsiveContainer>
         </TabsContent>
         <TabsContent value="bar">
           <ResponsiveContainer width="100%" height="100%">
-            <RechartsBarChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+            <RechartsBarChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="date" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
+              <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{fontSize: 12}}/>
+              <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} tick={{fontSize: 12}} width={50}/>
               <Tooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="close" fill="var(--color-close)" />
+              <Bar dataKey="close" fill={cn(changeType === 'positive' ? 'hsl(var(--chart-2))' : 'hsl(var(--destructive))')} />
             </RechartsBarChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -328,11 +337,13 @@ const CandlestickShape = (props: any) => {
   const fill = isBullish ? "hsl(var(--chart-2))" : "hsl(var(--destructive))";
   const stroke = fill;
   
+  if (high === low) return null;
+
   const wickY1 = y + height * ((high - Math.max(open, close)) / (high - low));
   const wickY2 = y + height * ((Math.min(open, close) - low) / (high - low));
 
-  const bodyY = y + height * ((Math.max(open, close) - Math.max(open, close)) / (high-low));
-  const bodyHeight = height * (Math.abs(open - close) / (high - low))
+  const bodyY = y + height * ((high - Math.max(open, close)) / (high - low));
+  const bodyHeight = height * (Math.abs(open - close) / (high - low));
 
   return (
     <g>
@@ -349,36 +360,3 @@ const CandlestickShape = (props: any) => {
     </g>
   );
 };
-
-function SparklineChart({ data, changeType }: { data: typeof infosysData; changeType: 'positive' | 'negative' }) {
-  const color = changeType === 'positive' ? 'hsl(var(--chart-2))' : 'hsl(var(--destructive))';
-  return (
-    <ChartContainer config={{ close: { color } }} className="h-[50px] w-full md:w-[200px]">
-      <AreaChart
-        accessibilityLayer
-        data={data}
-        margin={{
-          left: 12,
-          right: 12,
-          top: 5,
-          bottom: 5
-        }}
-      >
-        <defs>
-          <linearGradient id={`fill-${changeType}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={color} stopOpacity={0.8} />
-            <stop offset="95%" stopColor={color} stopOpacity={0.1} />
-          </linearGradient>
-        </defs>
-        <Area
-          dataKey="close"
-          type="natural"
-          fill={`url(#fill-${changeType})`}
-          stroke={color}
-          stackId="a"
-        />
-        <Tooltip cursor={false} content={null} />
-      </AreaChart>
-    </ChartContainer>
-  )
-}

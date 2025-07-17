@@ -65,6 +65,10 @@ export async function GET() {
       const change = data.d; // Change
       const percentageChange = data.dp; // Percent change
 
+      if (price === null || change === null || percentageChange === null) {
+        return generateSimulatedStockData(stock);
+      }
+
       return {
         ...stock,
         price: `₹${price.toFixed(2)}`,
@@ -82,3 +86,4 @@ export async function GET() {
     const simulatedData = initialWatchlistData.map(generateSimulatedStockData);
     return NextResponse.json(simulatedData);
   }
+}

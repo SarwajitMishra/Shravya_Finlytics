@@ -1,4 +1,5 @@
 
+
 export interface Stock {
   ticker: string;
   name: string;
@@ -29,6 +30,22 @@ export interface StockDetails extends Stock {
   peRatio: string;
   eps: string;
 }
+
+export interface StockChartData {
+    name: string;
+    ticker: string;
+    price: string;
+    change: string;
+    changeType: 'positive' | 'negative';
+    chartData: {
+        date: string;
+        open: number;
+        high: number;
+        low: number;
+        close: number;
+    }[];
+}
+
 
 export interface Achievement {
     icon: React.ReactNode;
