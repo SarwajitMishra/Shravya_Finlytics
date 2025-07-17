@@ -25,8 +25,6 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  Area,
-  AreaChart,
 } from "recharts";
 import {
   Card,
@@ -43,63 +41,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { autoTriggerFeedback } from "@/ai/flows/auto-trigger-feedback";
-import type { StockChartData, StockDetails } from '@/lib/types';
+import type { StockChartData } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
+import { useStock } from '@/hooks/use-stock';
 
-
-type StockId = 'infosys' | 'reliance';
-const stockTickers: Record<StockId, string> = {
-    infosys: 'INFY.NS',
-    reliance: 'RELIANCE.NS'
-};
-
-export default function StockChart() {
-  const [activeStockId, setActiveStockId] = useState<StockId>("infosys");
-  
-  return (
-    <Card className="h-full flex flex-col">
-       <Tabs defaultValue="infosys" onValueChange={(value) => setActiveStockId(value as StockId)}>
-        <CardHeader className="flex flex-col md:flex-row md:items-start md:justify-between">
-            <StockHeaderAndTabs activeStockId={activeStockId} />
-        </CardHeader>
-        <CardContent className="p-4 pt-0">
-          <AIInsight stockId={activeStockId} />
-
-          <div className="mt-4">
-            <ChartViews stockId={activeStockId} />
-          </div>
-
-          <div className="mt-4 pt-4 border-t flex flex-wrap gap-2 justify-center">
-            <Button variant="outline"><MessageCircle /> Ask AI About This Stock</Button>
-            <Button variant="outline"><PieChart /> Compare with Industry</Button>
-          </div>
-        </CardContent>
-      </Tabs>
-    </Card>
-  );
-}
-
-function useStockData(stockId: StockId) {
+function useStockData(ticker: string | null) {
     const [data, setData] = useState<StockChartData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!ticker) {
+            setData(null);
+            setLoading(false);
+            return;
+        }
+
         async function fetchStockData() {
             setLoading(true);
             setError(null);
             setData(null);
 
-            const ticker = stockTickers[stockId];
             const to = Math.floor(Date.now() / 1000);
             const from = to - (30 * 24 * 60 * 60); // 30 days ago
 
             try {
                 const response = await fetch(`/api/stock?ticker=${ticker}&from=${from}&to=${to}`);
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch stock data for ${ticker}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Failed to fetch stock data for ${ticker}`);
                 }
                 const stockData = await response.json();
                 setData(stockData);
@@ -110,14 +82,37 @@ function useStockData(stockId: StockId) {
             }
         }
         fetchStockData();
-    }, [stockId]);
+    }, [ticker]);
 
     return { data, loading, error };
 }
 
+export default function StockChart() {
+  const { selectedStock } = useStock();
+  
+  return (
+    <Card className="h-full flex flex-col">
+        <CardHeader className="flex flex-col md:flex-row md:items-start md:justify-between">
+            <StockHeader ticker={selectedStock} />
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <AIInsight ticker={selectedStock} />
 
-function StockHeaderAndTabs({ activeStockId }: { activeStockId: StockId }) {
-    const { data, loading, error } = useStockData(activeStockId);
+          <div className="mt-4">
+            <ChartViews ticker={selectedStock} />
+          </div>
+
+          <div className="mt-4 pt-4 border-t flex flex-wrap gap-2 justify-center">
+            <Button variant="outline"><MessageCircle /> Ask AI About This Stock</Button>
+            <Button variant="outline"><PieChart /> Compare with Industry</Button>
+          </div>
+        </CardContent>
+    </Card>
+  );
+}
+
+function StockHeader({ ticker }: { ticker: string | null }) {
+    const { data, loading, error } = useStockData(ticker);
 
     const sentimentIcons = {
         positive: <TrendingUp className="text-green-500" />,
@@ -129,33 +124,31 @@ function StockHeaderAndTabs({ activeStockId }: { activeStockId: StockId }) {
         return changeType === 'positive' ? sentimentIcons.positive : sentimentIcons.negative;
     }
 
+    if (loading) return <StockHeaderSkeleton />;
+    if (error) return <div className="text-red-500 p-2">{error}</div>;
+    if (!data) return (
+      <div>
+        <CardTitle className="font-headline">Select a Stock</CardTitle>
+        <CardDescription>Search for a stock to see its chart and insights.</CardDescription>
+      </div>
+    );
+
     return (
-         <div className="flex-1">
-             <TabsList className="grid w-full grid-cols-2 mb-2">
-                <TabsTrigger value="infosys">Infosys</TabsTrigger>
-                <TabsTrigger value="reliance">Reliance</TabsTrigger>
-            </TabsList>
-            
-            {loading && <StockHeaderSkeleton />}
-            {error && <div className="text-red-500 p-2">{error}</div>}
-            {data && (
-                <>
-                <CardTitle className="font-headline">{data.name}</CardTitle>
-                <div className="flex items-baseline gap-2 pt-2">
-                    <span className="text-3xl font-bold">{data.price}</span>
-                    <span
-                    className={cn("font-semibold flex items-center gap-1",
-                        data.changeType === "positive"
-                        ? "text-green-600"
-                        : "text-red-600"
-                    )}
-                    >
-                    {getSentiment(data.changeType)}
-                    {data.change}
-                    </span>
-                </div>
-                </>
-            )}
+        <div className="flex-1">
+            <CardTitle className="font-headline">{data.name} ({data.ticker})</CardTitle>
+            <div className="flex items-baseline gap-2 pt-2">
+                <span className="text-3xl font-bold">{data.price}</span>
+                <span
+                className={cn("font-semibold flex items-center gap-1",
+                    data.changeType === "positive"
+                    ? "text-green-600"
+                    : "text-red-600"
+                )}
+                >
+                {getSentiment(data.changeType)}
+                {data.change}
+                </span>
+            </div>
         </div>
     );
 }
@@ -172,21 +165,25 @@ function StockHeaderSkeleton() {
     )
 }
 
-
-function AIInsight({stockId}: {stockId: StockId}) {
+function AIInsight({ticker}: {ticker: string | null}) {
   const [aiInsight, setAiInsight] = useState<string>('');
-  const [isLoadingInsight, setIsLoadingInsight] = useState(true);
+  const [isLoadingInsight, setIsLoadingInsight] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const { data: stockData } = useStockData(stockId);
+  const { data: stockData } = useStockData(ticker);
 
   useEffect(() => {
+    if (!ticker) {
+      setAiInsight('');
+      setIsLoadingInsight(false);
+      return;
+    }
+
     const fetchInsight = async () => {
-      if (!stockId) return;
       setIsLoadingInsight(true);
       setAiInsight('');
       setIsExpanded(false);
       try {
-        const result = await autoTriggerFeedback({ stockTicker: stockTickers[stockId] });
+        const result = await autoTriggerFeedback({ stockTicker: ticker });
         setAiInsight(result.review);
       } catch (error) {
         console.error("Failed to fetch AI insight:", error);
@@ -196,7 +193,7 @@ function AIInsight({stockId}: {stockId: StockId}) {
       }
     };
     fetchInsight();
-  }, [stockId]);
+  }, [ticker]);
 
   const sentimentStyles = {
     positive: {
@@ -211,6 +208,7 @@ function AIInsight({stockId}: {stockId: StockId}) {
   
   const currentSentiment = stockData ? sentimentStyles[stockData.changeType] : null;
 
+  if (!ticker) return null;
 
   if (isLoadingInsight) {
     return (
@@ -246,8 +244,8 @@ function AIInsight({stockId}: {stockId: StockId}) {
 }
 
 
-function ChartViews({ stockId }: { stockId: StockId }) {
-    const { data, loading, error } = useStockData(stockId);
+function ChartViews({ ticker }: { ticker: string | null }) {
+    const { data, loading, error } = useStockData(ticker);
 
   const chartConfig = {
     close: { label: "Close", color: "hsl(var(--chart-1))" },
@@ -259,13 +257,16 @@ function ChartViews({ stockId }: { stockId: StockId }) {
   const chartData = data?.chartData || [];
   const changeType = data?.changeType || 'positive';
 
-
     if (loading) {
         return <Skeleton className="h-[300px] w-full mt-2" />;
     }
 
     if (error) {
-        return <div className="text-red-500 h-[300px] flex items-center justify-center">{error}</div>;
+        return <div className="h-[300px] flex items-center justify-center text-red-500 ">{error}</div>;
+    }
+
+    if (!data) {
+        return <div className="h-[300px] flex items-center justify-center text-muted-foreground">Search for a stock to view its chart.</div>;
     }
 
   return (
@@ -337,6 +338,10 @@ const CandlestickShape = (props: any) => {
   const fill = isBullish ? "hsl(var(--chart-2))" : "hsl(var(--destructive))";
   const stroke = fill;
   
+  if (high === undefined || low === undefined || open === undefined || close === undefined) {
+    return null;
+  }
+  
   if (high === low) return null;
 
   const wickY1 = y + height * ((high - Math.max(open, close)) / (high - low));
@@ -356,7 +361,7 @@ const CandlestickShape = (props: any) => {
         stroke={stroke} 
         strokeWidth={1} />
       {/* Body */}
-      <rect x={x} y={isBullish ? y + height * ((high - close) / (high - low)) : y + height * ((high - open) / (high - low))} width={width} height={Math.abs(y - (y + bodyHeight)) || 1} fill={fill} />
+      <rect x={x} y={isBullish ? y + height * ((high - close) / (high - low)) : y + height * ((high - open) / (high - low))} width={width} height={Math.max(1, Math.abs(y - (y + bodyHeight)))} fill={fill} />
     </g>
   );
 };

@@ -8,7 +8,6 @@ import {
   History,
   LayoutGrid,
   Newspaper,
-  Search,
   Settings,
   Star,
   User,
@@ -27,7 +26,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
 import {
   SidebarProvider,
   Sidebar,
@@ -50,6 +48,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
+import StockSearch from '@/components/dashboard/stock-search';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -114,14 +113,7 @@ export default function DashboardPage() {
           <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background/80 backdrop-blur-sm sm:px-6">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="md:hidden" />
-              <div className="relative flex-1 md:grow-0">
-                <Search className="absolute w-4 h-4 text-muted-foreground left-2.5 top-2.5" />
-                <Input
-                  type="search"
-                  placeholder="Search stocks, news..."
-                  className="w-full rounded-lg bg-card pl-8 md:w-[200px] lg:w-[320px]"
-                />
-              </div>
+              <StockSearch />
             </div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon">
